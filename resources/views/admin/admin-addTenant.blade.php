@@ -305,18 +305,6 @@
                         </div>
 
                         <div class="flex items-center mt-4 gap-x-3">
-{{--                            <form action="{{ route('admin.clear-tenant-data') }}" method="POST" onsubmit="return confirm('Are you sure you want to clear all tenant data? This action cannot be undone.');">--}}
-{{--                                @csrf--}}
-{{--                                <button type="submit"--}}
-{{--                                    class="flex items-center justify-center px-5 py-2 text-sm tracking-wide text-white transition-colors duration-200 bg-red-600 rounded-lg shrink-0 sm:w-auto gap-x-2 hover:bg-red-700">--}}
-{{--                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"--}}
-{{--                                        stroke-width="1.5" stroke="currentColor" class="w-5 h-5">--}}
-{{--                                        <path stroke-linecap="round" stroke-linejoin="round"--}}
-{{--                                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />--}}
-{{--                                    </svg>--}}
-{{--                                    <span>Clear Tenant Data</span>--}}
-{{--                                </button>--}}
-{{--                            </form>--}}
                             <button @click="toggledAddTenant"
                                 class="flex items-center justify-center w-1/2 px-5 py-2 text-sm tracking-wide text-gray-900 transition-colors duration-200 bg-[#ffc329] rounded-lg shrink-0 sm:w-auto gap-x-2 hover:bg-blue-600 dark:hover:bg-gray-800 dark:hover:text-[#ffc329] dark:bg-[#ffc329]">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -426,20 +414,6 @@
                                                 </option>
                                             </select>
                                         </label>
-
-
-{{--                                        <label class="block mt-2 text-white" for="room_number">--}}
-{{--                                            Room Number--}}
-{{--                                            <select id="room_number" name="room_number" v-model="selectedRoom" required--}}
-{{--                                                    class="mt-2 block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md--}}
-{{--                                                       focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40--}}
-{{--                                                       dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300">--}}
-{{--                                                <option value="" disabled>Select a room</option>--}}
-{{--                                                <option v-for="room in availableRooms" :key="room.room_number" :value="room.room_number">--}}
-{{--                                                    Room @{{ room.room_number }}--}}
-{{--                                                </option>--}}
-{{--                                            </select>--}}
-{{--                                        </label>--}}
 
                                         <label class="block mt-3 text-white" for="subscriptions">
                                             Subscriptions
@@ -1116,23 +1090,23 @@
                     // Show confirmation modal
                     this.confirmation = true;
                 },
-                submitForm() {
-                    // Add tenant_id as a hidden field to the form
-                    const form = document.getElementById('tenantForm');
-
-                    // Check if tenant_id hidden field already exists
-                    let tenantIdField = form.querySelector('input[name="tenant_id"]');
-                    if (!tenantIdField) {
-                        tenantIdField = document.createElement('input');
-                        tenantIdField.type = 'hidden';
-                        tenantIdField.name = 'tenant_id';
-                        form.appendChild(tenantIdField);
-                    }
-                    tenantIdField.value = this.formData.tenant_id;
-
-                    // Submit the form
-                    form.submit();
-                },
+                // submitForm() {
+                //     // Add tenant_id as a hidden field to the form
+                //     const form = document.getElementById('tenantForm');
+                //
+                //     // Check if tenant_id hidden field already exists
+                //     let tenantIdField = form.querySelector('input[name="tenant_id"]');
+                //     if (!tenantIdField) {
+                //         tenantIdField = document.createElement('input');
+                //         tenantIdField.type = 'hidden';
+                //         tenantIdField.name = 'tenant_id';
+                //         form.appendChild(tenantIdField);
+                //     }
+                //     tenantIdField.value = this.formData.tenant_id;
+                //
+                //     // Submit the form
+                //     form.submit();
+                // },
                 showArchiveConfirmation(tenantId) {
                     this.selectedTenantId = tenantId;
                     this.archiveConfirmation = true;
@@ -1300,84 +1274,54 @@
                         this.showNotification = false;
                     }, 3000); // Auto-hide after 3 seconds
                 },
-                async submitForm() {
-                    try {
-                        const response = await axios.post('/api/tenants', this.formData);
 
-                        if (response.data.success) {
-                            this.showAlert(response.data.message, 'success');
+                submitForm() {
+                    // If you want to submit via axios to the API endpoint (recommended)
+                    // and not the traditional form submit, use this code:
 
-                            // Reset form
-                            this.formData = {
-                                tenant_name: '',
-                                tenant_contact: '',
-                                total_occupants: '',
-                                room_number: '',
-                                subscriptions: '',
-                                start_date: this.minStartDate,
-                                end_date: '',
-                                tenant_id: 'Will be generated',
-                                password: 'password123',
-                            };
+                    axios.post('/api/add-tenant', this.formData, {
+                        withCredentials: true
+                    })
+                        .then(response => {
+                            if (response.data.success) {
+                                this.showAlert(response.data.message, 'success');
 
-                            // Close modals
-                            this.confirmation = false;
-                            this.isAddTenant = false;
+                                // Reset form fields after success
+                                this.formData = {
+                                    tenant_name: '',
+                                    tenant_contact: '',
+                                    total_occupants: '',
+                                    room_number: '',
+                                    subscriptions: '',
+                                    start_date: this.minStartDate || '',  // fallback to empty string if not set
+                                    end_date: '',
+                                    tenant_id: 'Will be generated',
+                                    password: 'password123',
+                                };
 
-                            // Refresh the page to show the new tenant
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 1500);
-                        } else {
-                            this.showAlert(response.data.message || 'An error occurred', 'error');
-                        }
-                    } catch (error) {
-                        console.error(error); // for debugging
+                                // Close modals
+                                this.confirmation = false;
+                                this.isAddTenant = false;
 
-                        // Graceful error message
-                        const message = error.response?.data?.message ||
-                            (error.response?.data?.errors ? Object.values(error.response.data.errors).flat().join('\n') : 'An error occurred.');
+                                // Refresh page or reload tenant list after a delay
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 1500);
 
-                        this.showAlert(message, 'error');
-                    }
+                            } else {
+                                this.showAlert(response.data.message || 'An error occurred', 'error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error(error);
+
+                            const message = error.response?.data?.message || 'Network or server error occurred.';
+                            this.showAlert(message, 'error');
+                        });
                 },
 
 
-                // New method to filter rooms that have no tenants
-                // async filterRoomsWithNoTenants() {
-                //     try {
-                //         const response = await fetch('/api/available-rooms');
-                //         const data = await response.json();
-                //         this.roomsWithNoTenants = data;
-                //     } catch (error) {
-                //         console.error('Failed to fetch rooms:', error);
-                //     }
-                // },
 
-                // fetchAvailableRooms() {
-                //     axios.get('/api/available-rooms')
-                //         .then(response => {
-                //             this.availableRooms = response.data;
-                //         })
-                //         .catch(error => {
-                //             console.error('Error fetching rooms:', error);
-                //         });
-                // },
-                // onRoomSelect() {
-                //     this.$emit('room-selected', this.selectedRoom);
-                // }
-
-                // fetchAvailableRooms() {
-                //     // Example using axios
-                //     axios.get('/api/available-rooms')
-                //         .then(response => {
-                //             console.log('API Response:', response.data);
-                //             this.availableRooms = response.data;
-                //         })
-                //         .catch(error => {
-                //             console.error('Error fetching rooms:', error);
-                //         });
-                // }
                 async fetchAvailableRooms() {
                     try {
                         const response = await fetch('/api/available-rooms');

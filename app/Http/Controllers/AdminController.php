@@ -21,7 +21,7 @@ class AdminController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:admin');
+        $this->middleware('auth:admin')->except(['getAvailableRooms', 'storeTenant']);
     }
 
     /**
@@ -759,7 +759,6 @@ class AdminController extends Controller
     public function getAvailableRooms()
     {
         $rooms = Room::where('is_available', true)
-            ->whereColumn('current_occupants', '<', 'capacity')
             ->get();
 
         return response()->json($rooms);
